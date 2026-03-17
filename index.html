@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🎮 人生Online · 考研冲刺 · 云端版</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #0b1a2f;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px 10px;
+        }
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .panel {
+            background: rgba(18, 30, 46, 0.9);
+            backdrop-filter: blur(4px);
+            border: 1px solid #2e4b62;
+            border-radius: 24px;
+            padding: 20px 18px;
+            box-shadow: 0 15px 25px -10px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(120, 180, 255, 0.15);
+            color: #d4e9ff;
+        }
+        h2, h3 {
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: #b3e0ff;
+            border-left: 4px solid #3fa7ff;
+            padding-left: 14px;
+            margin-bottom: 18px;
+            font-size: 1.5rem;
+            text-shadow: 0 2px 3px #00000040;
+        }
+        h3 {
+            font-size: 1.2rem;
+            margin: 10px 0 12px 0;
+            border-left-color: #6bc5ff;
+        }
+        .time-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 25px;
+            background: #0e2233;
+            border-radius: 40px;
+            padding: 14px 20px;
+            margin-bottom: 8px;
+            border: 1px solid #2b5270;
+        }
+        .time-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .time-label {
+            color: #7aa9c4;
+            font-size: 0.9rem;
+        }
+        .time-value {
+            background: #00000030;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #e3f2ff;
+            border: 1px solid #38658a;
+        }
+        .task-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 5px;
+        }
+        .task-table th {
+            text-align: left;
+            color: #8bb9da;
+            font-weight: 400;
+            font-size: 0.85rem;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #2e5f7a;
+        }
+        .task-table td {
+            padding: 12px 4px 12px 0;
+            border-bottom: 1px solid #1e4057;
+        }
+        .task-num {
+            background: #1b4560;
+            width: 38px;
+            height: 38px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            border: 1px solid #60b0ff;
+            margin-right: 10px;
+        }
+        .task-name {
+            font-size: 1.05rem;
+        }
+        .task-limit {
+            color: #96bcdd;
+            font-size: 0.8rem;
+        }
+        .reward-badge {
+            background: #1f5f3e;
+            border: 1px solid #6bb88b;
+            color: #d0ffd0;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .button-small {
+            background: #2b4b66;
+            border: none;
+            color: #d4f0ff;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #4786b0;
+            transition: 0.2s;
+            box-shadow: 0 3px 5px #00000030;
+        }
+        .button-small:hover {
+            background: #366f94;
+            border-color: #7ac4ff;
+            transform: scale(0.98);
+        }
+        .track-row {
+            background: #102f41;
+            border-radius: 20px;
+            padding: 14px 16px;
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .coin-display {
+            background: #1c3d4f;
+            border-radius: 60px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            border: 1px solid #4c94bb;
+        }
+        .coin-box {
+            background: #07212e;
+            border-radius: 40px;
+            padding: 12px 25px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffdb9d;
+            border: 1px solid #ffb347;
+            letter-spacing: 1px;
+        }
+        .word-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 25px;
+            background: #12364b;
+            padding: 18px 20px;
+            border-radius: 50px;
+            justify-content: center;
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #ffecb3;
+            border: 1px solid #6f9fbf;
+        }
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        .store-item {
+            background: #173e55;
+            border-radius: 30px;
+            padding: 14px 8px;
+            text-align: center;
+            border: 1px solid #5c93b5;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .store-item:hover {
+            background: #205c7a;
+            border-color: #a2d0ff;
+        }
+        .cmd-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 10px 0;
+            background: #0d1f2c;
+            border-radius: 60px;
+            padding: 18px 20px;
+        }
+        .cmd-input {
+            flex: 2;
+            min-width: 200px;
+            background: #1a384b;
+            border: 1px solid #3f7b9e;
+            border-radius: 60px;
+            padding: 16px 22px;
+            font-size: 1rem;
+            color: white;
+            outline: none;
+        }
+        .cmd-input::placeholder {
+            color: #7c9eb6;
+        }
+        .send-btn {
+            background: #2e6a8f;
+            border: none;
+            border-radius: 60px;
+            padding: 0 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            border: 1px solid #7fc0ff;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .log-panel {
+            background: #0e1b26;
+            border-radius: 30px;
+            padding: 16px 22px;
+            font-size: 0.95rem;
+            color: #b0d6f0;
+            border: 1px solid #256685;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .cloud-status {
+            background: #123d54;
+            border-radius: 30px;
+            padding: 10px 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            border: 1px solid #2e9aff;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="app">
+    <!-- 云端状态栏 -->
+    <div class="panel" style="padding: 12px 18px; background: #0f2b3b;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div class="cloud-status">
+                <span>☁️ 云端同步</span>
+                <span id="cloudStatus" style="color: #8affb8;">● 已连接</span>
+            </div>
+            <div>
+                <button class="button-small" id="manualSaveBtn" style="background: #1f5f5f;">💾 手动保存</button>
+                <button class="button-small" id="manualLoadBtn" style="background: #5f4f1f;">📂 手动加载</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 时间与倒计时 -->
+    <div class="panel">
+        <div class="time-grid">
+            <div class="time-item"><span class="time-label">📅 日期</span><span class="time-value" id="currentDate"></span></div>
+            <div class="time-item"><span class="time-label">⏳ 考研倒计时</span><span class="time-value" id="examCountdown"></span></div>
+            <div class="time-item"><span class="time-label">📆 本周</span><span class="time-value" id="weekProgress"></span></div>
+        </div>
+    </div>
+
+    <!-- 今日任务面板 + 账户 -->
+    <div class="panel">
+        <h2>💰 今日任务 · <span id="weekdayDisplay"></span></h2>
+        <table class="task-table" id="taskTable"></table>
+        <div class="coin-display" style="justify-content: space-between; margin-top: 16px;">
+            <span>🪙 今日获得 <strong id="todayEarn">0</strong> 币</span>
+            <span class="coin-box" id="totalCoins">0</span>
+        </div>
+    </div>
+
+    <!-- 连续打卡追踪 -->
+    <div class="panel">
+        <h3>⏰ 连续打卡追踪</h3>
+        <div class="track-row">
+            <span>早起挑战连续: <strong id="earlyStreak">0</strong> 天</span>
+            <span class="badge">连5天 +2币</span>
+        </div>
+        <div class="track-row">
+            <span>英语单词连续: <strong id="wordStreak">0</strong> 天</span>
+            <span class="badge">连7天 +3币 / 中断 -2币</span>
+        </div>
+        <div class="track-row">
+            <span>本周医学课: <strong id="medCount">0</strong> / 8 次</span>
+            <span class="badge" id="medWarning">不足扣10币</span>
+        </div>
+    </div>
+
+    <!-- 今日词汇卡 -->
+    <div class="panel">
+        <div style="display: flex; justify-content: space-between;">
+            <h3>📚 今日考研词汇</h3>
+            <button class="button-small" id="refreshWords">🔄 刷新</button>
+        </div>
+        <div class="word-row" id="wordRow"></div>
+    </div>
+
+    <!-- 商店 -->
+    <div class="panel">
+        <h3>🛒 商店兑换</h3>
+        <div class="store-grid" id="storeGrid"></div>
+    </div>
+
+    <!-- 命令输入 -->
+    <div class="panel cmd-bar">
+        <input type="text" class="cmd-input" id="cmdInput" placeholder="输入 01 02 或 早上好 或 添加任务：洗衣服 1币" autocomplete="off">
+        <button class="send-btn" id="sendCmd">⏎ 执行</button>
+    </div>
+
+    <!-- 系统日志 -->
+    <div class="panel log-panel" id="logPanel">⚡ 云端版 · 数据自动同步</div>
+</div>
+
+<script>
+    (function() {
+        // ==================== 云端存储配置 ====================
+        const CLOUD_KEY = 'kaoyan_game_data';
+        
+        // ==================== 初始化状态 ====================
+        let state = {
+            totalCoins: 0,
+            todayEarn: 0,
+            lastDate: '',
+            earlyStreak: 0,
+            wordStreak: 0,
+            wordLastDate: '',
+            medWeekCount: 0,
+            medWeekResetDay: '',
+            tasks: {
+                '01': { name: '早起挑战 (7:00前)', base: 1, count: 0, limit: '每日1次', last: '' },
+                '02': { name: '英语单词', base: 2, count: 0, limit: '每日1次', last: '' },
+                '03': { name: '英语阅读课 (1.5h)', base: 3, count: 0, limit: '每日1次', last: '' },
+                '04': { name: '医学考研课 (1.5h)', base: 3, count: 0, limit: '每日≤3次', last: '', dayCount: 0 },
+                '05': { name: '阅读 1h', base: 2, count: 0, limit: '可重复', last: '' }
+            },
+            customTasks: [],
+            nextCustomId: 6,
+            taskOrder: ['01', '02', '03', '04', '05'],
+            store: [
+                { code: 'A1', name: '15分钟纯玩', cost: 1 },
+                { code: 'A2', name: '30分钟纯玩', cost: 2 },
+                { code: 'A3', name: '1小时深度游戏', cost: 4 },
+                { code: 'B1', name: '周末玩一下午', cost: 12 },
+                { code: 'B2', name: '美食基金 (1币=10元)', cost: 1 }
+            ]
+        };
+
+        // 词库
+        const wordPool = [
+            ['abrogate', 'idiopathic', 'apoptosis', 'auscultation', 'contralateral'],
+            ['benign', 'malignant', 'biopsy', 'edema', 'ischemia'],
+            ['antibody', 'antigen', 'pathogen', 'placebo', 'vaccine'],
+            ['chronic', 'acute', 'diagnosis', 'prognosis', 'remission'],
+            ['enzyme', 'receptor', 'ligand', 'kinase', 'phosphorylation'],
+            ['systole', 'diastole', 'cardiac', 'aorta', 'ventricle'],
+            ['cortex', 'medulla', 'neuron', 'synapse', 'ganglion'],
+        ];
+
+        // ==================== 云端存储函数 ====================
+        function saveToCloud() {
+            try {
+                const dataStr = JSON.stringify(state);
+                localStorage.setItem(CLOUD_KEY, dataStr);
+                document.getElementById('cloudStatus').innerHTML = '● 已保存';
+                document.getElementById('cloudStatus').style.color = '#8affb8';
+                return true;
+            } catch (e) {
+                document.getElementById('cloudStatus').innerHTML = '○ 保存失败';
+                document.getElementById('cloudStatus').style.color = '#ff8a8a';
+                return false;
+            }
+        }
+
+        function loadFromCloud() {
+            try {
+                const saved = localStorage.getItem(CLOUD_KEY);
+                if (saved) {
+                    const loaded = JSON.parse(saved);
+                    state = { ...state, ...loaded };
+                    document.getElementById('cloudStatus').innerHTML = '● 已加载';
+                    document.getElementById('cloudStatus').style.color = '#8affb8';
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                document.getElementById('cloudStatus').innerHTML = '○ 加载失败';
+                document.getElementById('cloudStatus').style.color = '#ff8a8a';
+                return false;
+            }
+        }
+
+        // ==================== 辅助函数 ====================
+        function getTodayKey() {
+            const d = new Date();
+            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+        }
+
+        function getWeekMondayKey() {
+            const d = new Date();
+            const day = d.getDay();
+            const diff = (day === 0 ? 6 : day - 1);
+            const m = new Date(d);
+            m.setDate(d.getDate() - diff);
+            return `${m.getFullYear()}-${m.getMonth()+1}-${m.getDate()}`;
+        }
+
+        function isWeekday() {
+            const day = new Date().getDay();
+            return day >= 1 && day <= 5;
+        }
+
+        function updateWeekday() {
+            const d = new Date();
+            const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            return weekdays[d.getDay()] + ' ' + d.toLocaleDateString('zh-CN').slice(5);
+        }
+
+        function countdown() {
+            const exam = new Date(2026, 11, 21);
+            const today = new Date();
+            const diff = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
+            return diff >= 0 ? diff : 0;
+        }
+
+        function weekProgress() {
+            const d = new Date();
+            const day = d.getDay();
+            if (day === 0) return '周日 / 周五';
+            if (day === 6) return '周六 / 周五';
+            const weekdays = ['周一', '周二', '周三', '周四', '周五'];
+            return weekdays[day-1] + ' / 周五';
+        }
+
+        // 检查新的一天
+        function checkNewDay() {
+            const today = getTodayKey();
+            if (state.lastDate !== today) {
+                state.tasks['01'].count = 0;
+                state.tasks['02'].count = 0;
+                state.tasks['03'].count = 0;
+                state.tasks['04'].dayCount = 0;
+                state.tasks['05'].count = 0;
+                state.lastDate = today;
+                state.todayEarn = 0;
+                
+                if (state.wordLastDate !== today) {
+                    const yesterday = new Date(Date.now() - 86400000);
+                    const yKey = `${yesterday.getFullYear()}-${yesterday.getMonth()+1}-${yesterday.getDate()}`;
+                    if (state.wordLastDate && state.wordLastDate !== yKey) {
+                        state.totalCoins = Math.max(0, state.totalCoins - 2);
+                        state.wordStreak = 0;
+                    }
+                }
+                
+                const monday = getWeekMondayKey();
+                if (state.medWeekResetDay !== monday) {
+                    if (state.medWeekResetDay && state.medWeekCount < 8) {
+                        state.totalCoins = Math.max(0, state.totalCoins - 10);
+                    }
+                    state.medWeekCount = 0;
+                    state.medWeekResetDay = monday;
+                }
+                saveToCloud();
+                renderAll();
+            }
+        }
+
+        // ==================== 核心功能 ====================
+        function completeTask(taskId) {
+            const today = getTodayKey();
+            const task = state.tasks[taskId];
+            
+            if (!task) {
+                const customIndex = state.customTasks.findIndex(t => t.id == taskId);
+                if (customIndex === -1) { 
+                    document.getElementById('logPanel').innerHTML = '❌ 任务编号不存在<br>' + document.getElementById('logPanel').innerHTML; 
+                    return; 
+                }
+                
+                const custom = state.customTasks[customIndex];
+                state.totalCoins += custom.base;
+                state.todayEarn += custom.base;
+                document.getElementById('logPanel').innerHTML = `✅ 完成 ${custom.name} +${custom.base}币（任务已移除）<br>` + document.getElementById('logPanel').innerHTML;
+                
+                state.customTasks.splice(customIndex, 1);
+                
+                saveToCloud(); 
+                renderAll(); 
+                return;
+            }
+
+            if (taskId === '01') {
+                if (task.count >= 1) { document.getElementById('logPanel').innerHTML = '❌ 早起已完成<br>' + document.getElementById('logPanel').innerHTML; return; }
+                if (!isWeekday()) { document.getElementById('logPanel').innerHTML = '❌ 早起仅限工作日<br>' + document.getElementById('logPanel').innerHTML; return; }
+                task.count = 1;
+                const y = new Date(Date.now() - 86400000);
+                const yKey = `${y.getFullYear()}-${y.getMonth()+1}-${y.getDate()}`;
+                if (task.last === yKey && isWeekday()) {
+                    state.earlyStreak += 1;
+                } else {
+                    state.earlyStreak = 1;
+                }
+                task.last = today;
+                state.totalCoins += task.base;
+                state.todayEarn += task.base;
+                document.getElementById('logPanel').innerHTML = `✅ 早起挑战 +${task.base}币<br>` + document.getElementById('logPanel').innerHTML;
+                
+                if (state.earlyStreak >= 5 && state.earlyStreak % 5 === 0) {
+                    state.totalCoins += 2;
+                    document.getElementById('logPanel').innerHTML = '🎁 早起连续5天 +2币<br>' + document.getElementById('logPanel').innerHTML;
+                }
+            }
+            else if (taskId === '02') {
+                if (task.count >= 1) { document.getElementById('logPanel').innerHTML = '❌ 单词每日一次<br>' + document.getElementById('logPanel').innerHTML; return; }
+                task.count = 1;
+                const yKey = new Date(Date.now() - 86400000);
+                const yKeyStr = `${yKey.getFullYear()}-${yKey.getMonth()+1}-${yKey.getDate()}`;
+                if (state.wordLastDate === yKeyStr) {
+                    state.wordStreak += 1;
+                } else {
+                    state.wordStreak = 1;
+                }
+                state.wordLastDate = today;
+                state.totalCoins += task.base;
+                state.todayEarn += task.base;
+                document.getElementById('logPanel').innerHTML = `✅ 英语单词 +${task.base}币<br>` + document.getElementById('logPanel').innerHTML;
+                
+                if (state.wordStreak > 0 && state.wordStreak % 7 === 0) {
+                    state.totalCoins += 3;
+                    document.getElementById('logPanel').innerHTML = '🎁 单词连续7天 +3币<br>' + document.getElementById('logPanel').innerHTML;
+                }
+            }
+            else if (taskId === '03') {
+                if (task.count >= 1) { document.getElementById('logPanel').innerHTML = '❌ 英语课每日一次<br>' + document.getElementById('logPanel').innerHTML; return; }
+                task.count = 1;
+                state.totalCoins += task.base;
+                state.todayEarn += task.base;
+                document.getElementById('logPanel').innerHTML = `✅ 英语阅读课 +${task.base}币<br>` + document.getElementById('logPanel').innerHTML;
+            }
+            else if (taskId === '04') {
+                const dayCount = state.tasks['04'].dayCount || 0;
+                if (dayCount >= 3) { document.getElementById('logPanel').innerHTML = '❌ 医学课今日已达3次上限<br>' + document.getElementById('logPanel').innerHTML; return; }
+                state.tasks['04'].dayCount = dayCount + 1;
+                state.medWeekCount += 1;
+                state.totalCoins += task.base;
+                state.todayEarn += task.base;
+                document.getElementById('logPanel').innerHTML = `✅ 医学考研课 +${task.base}币 (本周第${state.medWeekCount}次)<br>` + document.getElementById('logPanel').innerHTML;
+            }
+            else if (taskId === '05') {
+                state.totalCoins += task.base;
+                state.todayEarn += task.base;
+                task.count = (task.count || 0) + 1;
+                document.getElementById('logPanel').innerHTML = `✅ 阅读1h +${task.base}币<br>` + document.getElementById('logPanel').innerHTML;
+            }
+            
+            saveToCloud();
+            renderAll();
+        }
+
+        function buyItem(code) {
+            const item = state.store.find(s => s.code === code);
+            if (!item) return;
+            if (state.totalCoins < item.cost) { document.getElementById('logPanel').innerHTML = '❌ 金币不足<br>' + document.getElementById('logPanel').innerHTML; return; }
+            state.totalCoins -= item.cost;
+            if (code === 'B2') document.getElementById('logPanel').innerHTML = `🍜 美食基金到账 ${item.cost*10}元<br>` + document.getElementById('logPanel').innerHTML;
+            else document.getElementById('logPanel').innerHTML = `🎮 兑换 ${item.name}<br>` + document.getElementById('logPanel').innerHTML;
+            saveToCloud(); 
+            renderAll();
+        }
+
+        function addCustomTask(name, reward) {
+            const id = state.nextCustomId++;
+            state.customTasks.push({ id, name, base: parseInt(reward) || 1 });
+            document.getElementById('logPanel').innerHTML = `📌 添加临时任务 ${id}：${name} +${reward}币<br>` + document.getElementById('logPanel').innerHTML;
+            saveToCloud(); 
+            renderAll();
+        }
+
+        // ==================== 渲染界面 ====================
+        function renderAll() {
+            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('zh-CN');
+            document.getElementById('examCountdown').innerText = countdown() + '天';
+            document.getElementById('weekProgress').innerText = weekProgress();
+            document.getElementById('weekdayDisplay').innerText = updateWeekday();
+            document.getElementById('todayEarn').innerText = state.todayEarn;
+            document.getElementById('totalCoins').innerText = state.totalCoins;
+            document.getElementById('earlyStreak').innerText = state.earlyStreak;
+            document.getElementById('wordStreak').innerText = state.wordStreak;
+            document.getElementById('medCount').innerText = state.medWeekCount;
+            document.getElementById('medWarning').innerText = state.medWeekCount >= 8 ? '✅ 已达标' : '不足扣10币';
+
+            let html = '<tr><th>编号</th><th>任务</th><th>奖励</th><th></th></tr>';
+            for (let id of state.taskOrder) {
+                const t = state.tasks[id];
+                let limitNote = t.limit;
+                if (id === '04') limitNote = `今日 ${t.dayCount || 0}/3`;
+                if (id === '05') limitNote = `今日 ${t.count || 0} 次`;
+                html += `<tr><td><span class="task-num">${id}</span></td>
+                <td><span class="task-name">${t.name}</span><div class="task-limit">${limitNote}</div></td>
+                <td><span class="reward-badge">+${t.base}币</span></td>
+                <td><button class="button-small" onclick="window.complete('${id}')">完成</button></td></tr>`;
+            }
+            for (let c of state.customTasks) {
+                html += `<tr><td><span class="task-num">${c.id}</span></td>
+                <td>${c.name}<div class="task-limit">✨ 临时·完成消失</div></td>
+                <td><span class="reward-badge">+${c.base}币</span></td>
+                <td><button class="button-small" onclick="window.complete('${c.id}')">完成</button></td></tr>`;
+            }
+            document.getElementById('taskTable').innerHTML = html;
+
+            let storeHtml = '';
+            state.store.forEach(s => {
+                storeHtml += `<div class="store-item" onclick="window.buy('${s.code}')">${s.name}<br><span style="color:#fdb;font-weight:700;">${s.cost}币</span></div>`;
+            });
+            document.getElementById('storeGrid').innerHTML = storeHtml;
+
+            const randomIdx = Math.floor(Math.random() * wordPool.length);
+            document.getElementById('wordRow').innerText = wordPool[randomIdx].join('  ');
+        }
+
+        // ==================== 初始化 ====================
+        function init() {
+            loadFromCloud();
+            checkNewDay();
+            renderAll();
+            
+            setInterval(() => {
+                saveToCloud();
+            }, 30000);
+        }
+
+        // ==================== 事件绑定 ====================
+        window.complete = completeTask;
+        window.buy = buyItem;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            
+            document.getElementById('sendCmd').addEventListener('click', function() {
+                const input = document.getElementById('cmdInput').value.trim();
+                if (!input) return;
+                
+                if (input === '早上好') {
+                    checkNewDay();
+                    document.getElementById('logPanel').innerHTML = '🌅 新的一天，任务已刷新<br>' + document.getElementById('logPanel').innerHTML;
+                } else if (input === '商店') {
+                    document.getElementById('storeGrid').scrollIntoView({ behavior: 'smooth' });
+                } else if (input === '任务') {
+                    document.getElementById('taskTable').scrollIntoView({ behavior: 'smooth' });
+                } else if (input.toLowerCase().startsWith('添加任务：')) {
+                    const parts = input.substring(5).trim().split(' ');
+                    if (parts.length >= 2) {
+                        let name = parts[0];
+                        let val = parts[1].replace('币', '');
+                        addCustomTask(name, val);
+                    } else {
+                        document.getElementById('logPanel').innerHTML = '格式: 添加任务：名称 奖励币<br>' + document.getElementById('logPanel').innerHTML;
+                    }
+                } else {
+                    const ids = input.split(/\s+/);
+                    ids.forEach(id => {
+                        if (id.match(/^\d+$/)) completeTask(id);
+                        else if (id.match(/^[A-Z]\d$/)) buyItem(id);
+                    });
+                }
+                document.getElementById('cmdInput').value = '';
+            });
+
+            document.getElementById('refreshWords').addEventListener('click', function() {
+                const randomIdx = Math.floor(Math.random() * wordPool.length);
+                document.getElementById('wordRow').innerText = wordPool[randomIdx].join('  ');
+            });
+
+            document.getElementById('manualSaveBtn').addEventListener('click', function() {
+                saveToCloud();
+            });
+
+            document.getElementById('manualLoadBtn').addEventListener('click', function() {
+                loadFromCloud();
+                renderAll();
+            });
+
+            document.getElementById('cmdInput').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('sendCmd').click();
+                }
+            });
+        });
+    })();
+</script>
+</body>
+</html>
