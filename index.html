@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>🎮 人生Online · 考研冲刺 v3.0</title>
+    <title>🎮 人生Online · 考研冲刺 v1.1</title>
     <style>
         * {
             box-sizing: border-box;
@@ -311,7 +311,7 @@
     </div>
 
     <!-- 系统日志 -->
-    <div class="panel log-panel" id="logPanel">⚡ 考研冲刺 v3.0 · 无单词卡版</div>
+    <div class="panel log-panel" id="logPanel">⚡ 考研冲刺 v1.1 · 倒计时2026.12.19</div>
 </div>
 
 <script>
@@ -388,7 +388,8 @@
         }
 
         function countdown() {
-            const exam = new Date(2026, 11, 21);
+            // 考试日期：2026年12月19日
+            const exam = new Date(2026, 11, 19); // 月份从0开始，11代表12月
             const today = new Date();
             const diff = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
             return diff >= 0 ? diff : 0;
