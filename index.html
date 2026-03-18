@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>🎮 人生Online · 医学生考研冲刺 v1.2</title>
+    <title>🎮 人生Online · 医学生考研冲刺 v1.3</title>
     <style>
         * {
             box-sizing: border-box;
@@ -21,7 +21,7 @@
             overflow-x: hidden;
         }
         
-        /* 淡淡的医学元素背景贴纸 */
+        /* 加量版的医学元素背景贴纸 */
         .medical-bg {
             position: fixed;
             top: 0;
@@ -30,7 +30,7 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.15;
+            opacity: 0.35;  /* 从0.15提高到0.35 */
         }
         .medical-bg::before {
             content: "⚕️";
@@ -40,7 +40,7 @@
             font-size: 8rem;
             transform: rotate(15deg);
             color: #4a90e2;
-            opacity: 0.2;
+            opacity: 0.3;
         }
         .medical-bg::after {
             content: "🫀";
@@ -50,25 +50,39 @@
             font-size: 10rem;
             transform: rotate(-10deg);
             color: #e24a4a;
-            opacity: 0.15;
+            opacity: 0.25;
         }
         .medical-bg span:nth-child(1) {
-            content: "🧬";
             position: absolute;
             top: 20%;
             left: 10%;
             font-size: 6rem;
-            opacity: 0.15;
+            opacity: 0.25;
             transform: rotate(5deg);
         }
         .medical-bg span:nth-child(2) {
-            content: "💊";
             position: absolute;
             bottom: 30%;
             right: 15%;
             font-size: 7rem;
-            opacity: 0.1;
+            opacity: 0.2;
             transform: rotate(-5deg);
+        }
+        .medical-bg span:nth-child(3) {
+            position: absolute;
+            top: 60%;
+            left: 20%;
+            font-size: 5rem;
+            opacity: 0.3;
+            transform: rotate(20deg);
+        }
+        .medical-bg span:nth-child(4) {
+            position: absolute;
+            bottom: 40%;
+            right: 25%;
+            font-size: 6rem;
+            opacity: 0.2;
+            transform: rotate(-15deg);
         }
         
         .game-container {
@@ -80,6 +94,62 @@
             position: relative;
             z-index: 1;
         }
+
+        /* 顶部布局：小钱袋和日志框 */
+        .top-section {
+            display: flex;
+            gap: 16px;
+            align-items: stretch;
+        }
+        
+        /* 小钱袋 - 固定在左上角 */
+        .coin-pouch {
+            background: linear-gradient(145deg, #b8860b, #8b6911);
+            border-radius: 30px;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffd700;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,200,0.3);
+            min-width: 120px;
+            position: relative;
+            flex: 0 0 auto;
+        }
+        .coin-pouch::before {
+            content: "💰";
+            font-size: 2.5rem;
+            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.5));
+        }
+        .coin-amount {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #ffecb3;
+            text-shadow: 2px 2px 0 #8b6911;
+            line-height: 1.2;
+        }
+        .coin-label {
+            font-size: 0.8rem;
+            color: #ffd8a0;
+            letter-spacing: 2px;
+        }
+
+        /* 日志框 - 放在小钱袋下面（但在flex中会是右侧） */
+        .log-pouch {
+            background: #0e1b26;
+            border-radius: 30px;
+            padding: 15px 20px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            border: 1px solid #256685;
+            color: #b0d6f0;
+            font-size: 0.95rem;
+            overflow-y: auto;
+            max-height: 100px;
+        }
+        
         .panel {
             background: rgba(18, 30, 46, 0.9);
             backdrop-filter: blur(4px);
@@ -171,18 +241,9 @@
         .week-indicator {
             display: flex;
             gap: 8px;
-            margin-top: 10px;
+            margin-top: 15px;
             justify-content: center;
-        }
-        .week-dot {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin: 0 2px;
+            flex-wrap: wrap;
         }
         .task-table {
             width: 100%;
@@ -272,39 +333,6 @@
             justify-content: space-between;
             align-items: center;
         }
-        .coin-display {
-            background: #1c3d4f;
-            border-radius: 60px;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            border: 1px solid #4c94bb;
-        }
-        .coin-box {
-            background: #07212e;
-            border-radius: 40px;
-            padding: 12px 25px;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #ffdb9d;
-            border: 1px solid #ffb347;
-            letter-spacing: 1px;
-        }
-        .word-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px 25px;
-            background: #12364b;
-            padding: 18px 20px;
-            border-radius: 50px;
-            justify-content: center;
-            font-size: 1.15rem;
-            font-weight: 500;
-            color: #ffecb3;
-            border: 1px solid #6f9fbf;
-        }
         .store-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -371,16 +399,6 @@
         .add-btn:hover {
             background: #ffa01e;
         }
-        .log-panel {
-            background: #0e1b26;
-            border-radius: 30px;
-            padding: 16px 22px;
-            font-size: 0.95rem;
-            color: #b0d6f0;
-            border: 1px solid #256685;
-            max-height: 100px;
-            overflow-y: auto;
-        }
         .cloud-status {
             background: #123d54;
             border-radius: 30px;
@@ -397,15 +415,31 @@
     </style>
 </head>
 <body>
-    <!-- 淡淡的医学元素背景 -->
+    <!-- 加量版的医学元素背景 -->
     <div class="medical-bg">
-        <span style="position: absolute; top: 10%; left: 5%; font-size: 7rem; opacity: 0.1;">🩺</span>
-        <span style="position: absolute; bottom: 15%; right: 8%; font-size: 8rem; opacity: 0.1;">💉</span>
-        <span style="position: absolute; top: 40%; right: 20%; font-size: 5rem; opacity: 0.08;">🧪</span>
-        <span style="position: absolute; bottom: 30%; left: 15%; font-size: 6rem; opacity: 0.1;">📋</span>
+        <span>🩺</span>
+        <span>💉</span>
+        <span>🧪</span>
+        <span>📋</span>
+        <span>💊</span>
+        <span>🫁</span>
     </div>
 
     <div class="game-container" id="app">
+        <!-- 顶部：小钱袋 + 日志框 -->
+        <div class="top-section">
+            <!-- 小钱袋 -->
+            <div class="coin-pouch">
+                <div class="coin-amount" id="totalCoins">0</div>
+                <div class="coin-label">金币</div>
+            </div>
+            
+            <!-- 日志框（放在小钱袋旁边） -->
+            <div class="log-pouch" id="logPanel">
+                ⚡ 人生Online v1.3
+            </div>
+        </div>
+
         <!-- 云端状态栏 -->
         <div class="panel" style="padding: 12px 18px; background: #0f2b3b;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
@@ -437,47 +471,20 @@
                 <button class="sign-btn" id="signBtn">签到</button>
             </div>
             
-            <!-- 签到周指示器 -->
+            <!-- 签到周指示器（美化版） -->
             <div class="week-indicator" id="signWeekIndicator"></div>
         </div>
 
-        <!-- 今日任务面板 + 账户 -->
+        <!-- 今日任务面板 -->
         <div class="panel">
             <h2>💰 今日任务 · <span id="weekdayDisplay"></span></h2>
             <table class="task-table" id="taskTable"></table>
-            <div class="coin-display" style="justify-content: space-between; margin-top: 16px;">
+            <div style="margin-top: 16px; text-align: right;">
                 <span>🪙 今日获得 <strong id="todayEarn">0</strong> 币</span>
-                <span class="coin-box" id="totalCoins">0</span>
             </div>
         </div>
 
-        <!-- 连续打卡追踪 -->
-        <div class="panel">
-            <h3>⏰ 连续打卡追踪</h3>
-            <div class="track-row">
-                <span>早起签到连续: <strong id="earlyStreak">0</strong> 天</span>
-                <span class="badge">连5天 +2币</span>
-            </div>
-            <div class="track-row">
-                <span>英语单词连续: <strong id="wordStreak">0</strong> 天</span>
-                <span class="badge">连7天 +3币 / 中断 -2币</span>
-            </div>
-            <div class="track-row">
-                <span>本周医学课: <strong id="medCount">0</strong> / 8 次</span>
-                <span class="badge" id="medWarning">不足扣10币</span>
-            </div>
-        </div>
-
-        <!-- 今日词汇卡 -->
-        <div class="panel">
-            <div style="display: flex; justify-content: space-between;">
-                <h3>📚 今日考研词汇</h3>
-                <button class="button-small" id="refreshWords">🔄 刷新</button>
-            </div>
-            <div class="word-row" id="wordRow"></div>
-        </div>
-
-        <!-- 限时任务添加栏 -->
+        <!-- 限时任务添加栏（放在今日任务下面） -->
         <div class="panel" style="background: #1a3343;">
             <h3>⏳ 添加限时任务</h3>
             <div class="timed-task-input">
@@ -496,14 +503,28 @@
             <div class="store-grid" id="storeGrid"></div>
         </div>
 
-        <!-- 系统日志 -->
-        <div class="panel log-panel" id="logPanel">⚡ 人生Online v1.2 · 医学生考研冲刺</div>
+        <!-- 连续打卡追踪（移到最后） -->
+        <div class="panel">
+            <h3>⏰ 连续打卡追踪</h3>
+            <div class="track-row">
+                <span>早起签到连续: <strong id="earlyStreak">0</strong> 天</span>
+                <span class="badge">连5天 +2币</span>
+            </div>
+            <div class="track-row">
+                <span>英语单词连续: <strong id="wordStreak">0</strong> 天</span>
+                <span class="badge">连7天 +3币 / 中断 -2币</span>
+            </div>
+            <div class="track-row">
+                <span>本周医学课: <strong id="medCount">0</strong> / 8 次</span>
+                <span class="badge" id="medWarning">不足扣10币</span>
+            </div>
+        </div>
     </div>
 
     <script>
         (function() {
             // ==================== 云端存储配置 ====================
-            const CLOUD_KEY = 'kaoyan_game_data_v12';
+            const CLOUD_KEY = 'kaoyan_game_data_v13';
             
             // ==================== 初始化状态 ====================
             let state = {
@@ -543,17 +564,6 @@
                     { code: 'B2', name: '美食基金 (1币=10元)', cost: 1 }
                 ]
             };
-
-            // 词库
-            const wordPool = [
-                ['abrogate', 'idiopathic', 'apoptosis', 'auscultation', 'contralateral'],
-                ['benign', 'malignant', 'biopsy', 'edema', 'ischemia'],
-                ['antibody', 'antigen', 'pathogen', 'placebo', 'vaccine'],
-                ['chronic', 'acute', 'diagnosis', 'prognosis', 'remission'],
-                ['enzyme', 'receptor', 'ligand', 'kinase', 'phosphorylation'],
-                ['systole', 'diastole', 'cardiac', 'aorta', 'ventricle'],
-                ['cortex', 'medulla', 'neuron', 'synapse', 'ganglion'],
-            ];
 
             // ==================== 云端存储函数 ====================
             function saveToCloud() {
@@ -684,20 +694,30 @@
                 // 检查今天是否已经签到过
                 const todaySign = state.signHistory.find(s => s.date === today);
                 if (todaySign) {
-                    pushLog(`❌ 今天已经签到过了（${todaySign.time}）`);
+                    const [signHour, signMinute] = todaySign.time.split(':').map(Number);
+                    let signType = '';
+                    if (signHour < 7 || (signHour === 7 && signMinute < 30)) {
+                        signType = '⭐ 7:30前';
+                    } else if (signHour < 8) {
+                        signType = '✓ 8:00前';
+                    }
+                    pushLog(`❌ 今天已经签到过了！${signType} (${todaySign.time})`);
                     return;
                 }
                 
                 // 判断签到时间（7:30前）
                 let reward = 0;
                 let message = '';
+                let signType = '';
                 
                 if (hour < 7 || (hour === 7 && minute < 30)) {
                     reward = 2;
                     message = `✅ 7:30前签到 +2币！`;
+                    signType = '⭐';
                 } else if (hour < 8) {
                     reward = 1;
                     message = `✅ 8点前签到 +1币`;
+                    signType = '✓';
                 } else {
                     message = `🌙 明天继续加油！`;
                     pushLog(message);
@@ -747,7 +767,7 @@
                 renderAll();
             }
 
-            // 更新签到周显示
+            // 更新签到周显示（美化版）
             function updateSignDisplay() {
                 const monday = getWeekMondayKey();
                 let html = '';
@@ -760,31 +780,71 @@
                     // 检查这天是否签到
                     const signRecord = state.signHistory.find(s => s.date === dateStr);
                     
-                    // 判断是否7:30前
-                    let isEarly = false;
+                    let icon = '○';
+                    let color = '#4a6b8a';
+                    let bgColor = 'transparent';
+                    
                     if (signRecord) {
                         const [hour, minute] = signRecord.time.split(':').map(Number);
-                        isEarly = hour < 7 || (hour === 7 && minute < 30);
-                    }
-                    
-                    let color = '#3a5f7a'; // 默认灰色
-                    let symbol = '○';
-                    
-                    if (signRecord) {
+                        const isEarly = hour < 7 || (hour === 7 && minute < 30);
+                        
                         if (isEarly) {
-                            color = '#ffb347'; // 金色 - 7:30前
-                            symbol = '⭐';
+                            icon = '⭐';
+                            color = '#ffb347';
+                            bgColor = '#2a4a3a';
                         } else {
-                            color = '#6bb88b'; // 绿色 - 8点前
-                            symbol = '✓';
+                            icon = '✓';
+                            color = '#6bb88b';
+                            bgColor = '#1e4a3a';
+                        }
+                    } else {
+                        // 检查是否已过当天（判断是否错过）
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const checkDate = new Date(targetDate);
+                        checkDate.setHours(0, 0, 0, 0);
+                        
+                        if (checkDate < today) {
+                            icon = '❌';
+                            color = '#ff6b6b';
+                            bgColor = '#4a2a2a';
                         }
                     }
                     
-                    html += `<span class="week-dot" style="background: ${color};">${symbol}</span>`;
+                    // 获取星期几
+                    const weekdays = ['一', '二', '三', '四', '五', '六', '日'];
+                    
+                    html += `
+                        <div style="
+                            display: inline-flex;
+                            flex-direction: column;
+                            align-items: center;
+                            margin: 0 5px;
+                        ">
+                            <div style="
+                                width: 45px;
+                                height: 45px;
+                                border-radius: 50%;
+                                background: ${bgColor};
+                                border: 2px solid ${color};
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 1.5rem;
+                                color: ${color};
+                                box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                            ">${icon}</div>
+                            <span style="
+                                margin-top: 5px;
+                                color: #96bcdd;
+                                font-size: 0.8rem;
+                            ">周${weekdays[i]}</span>
+                        </div>
+                    `;
                 }
                 
                 document.getElementById('signWeekIndicator').innerHTML = html;
-                document.getElementById('signStreakDisplay').innerText = `本周7:30前签到 ${state.weekSignCount}/5 次`;
+                document.getElementById('signStreakDisplay').innerHTML = `本周7:30前签到 ${state.weekSignCount}/5 次`;
             }
 
             // ==================== 限时任务功能 ====================
@@ -971,11 +1031,6 @@
                     state.todayEarn += task.base;
                     task.count = (task.count || 0) + 1;
                     pushLog(`✅ 阅读1h +${task.base}币`);
-                }
-                
-                // 早起连续检查（通过签到实现，这里只保留单词奖励）
-                if (state.wordStreak > 0 && state.wordStreak % 7 === 0 && taskId === '02') {
-                    // 已经在上面处理了
                 }
                 
                 saveToCloud();
@@ -1175,10 +1230,6 @@
                     storeHtml += `<div class="store-item" onclick="window.buy('${s.code}')">${s.name}<br><span style="color:#fdb;font-weight:700;">${s.cost}币</span></div>`;
                 });
                 document.getElementById('storeGrid').innerHTML = storeHtml;
-
-                // 随机单词
-                const randomIdx = Math.floor(Math.random() * wordPool.length);
-                document.getElementById('wordRow').innerText = wordPool[randomIdx].join('  ');
             }
 
             function pushLog(msg) {
@@ -1222,11 +1273,6 @@
                     if (e.key === 'Enter') {
                         addTimedTask();
                     }
-                });
-
-                document.getElementById('refreshWords').addEventListener('click', function() {
-                    const randomIdx = Math.floor(Math.random() * wordPool.length);
-                    document.getElementById('wordRow').innerText = wordPool[randomIdx].join('  ');
                 });
 
                 document.getElementById('manualSaveBtn').addEventListener('click', function() {
