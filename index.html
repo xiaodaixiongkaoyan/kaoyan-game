@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>🎮 人生Online · 医学生考研冲刺 v1.3</title>
+    <title>🎮 人生Online · 医学生考研冲刺 v1.4</title>
     <style>
         * {
             box-sizing: border-box;
@@ -481,14 +481,14 @@
 
         <!-- 日志框放在最下面 -->
         <div class="log-panel" id="logPanel">
-            ⚡ 人生Online v1.3
+            ⚡ 人生Online v1.4
         </div>
     </div>
 
     <script>
         (function() {
             // ==================== 云端存储配置 ====================
-            const CLOUD_KEY = 'kaoyan_game_data_v13';
+            const CLOUD_KEY = 'kaoyan_game_data_v14';
             
             // ==================== 初始化状态 ====================
             let state = {
@@ -660,16 +660,21 @@
                 if (todaySign) {
                     const [signHour, signMinute] = todaySign.time.split(':').map(Number);
                     let signType = '';
-                    if (signHour < 7 || (signHour === 7 && signMinute < 30)) {
+                    if (todaySign.reward === 2) {
                         signType = '⭐ 7:30前';
-                    } else if (signHour < 8) {
-                        signType = '✓ 8:00前';
+                    } else if (todaySign.reward === 1) {
+                        signType = '✓ 7:30-8:00';
+                    } else {
+                        signType = '❌ 8:00后';
                     }
                     pushLog(`❌ 今天已经签到过了！${signType} (${todaySign.time})`);
+                    
+                    updateSignDisplay();
+                    renderAll();
                     return;
                 }
                 
-                // 判断签到时间（7:30前）
+                // 判断签到时间
                 let reward = 0;
                 let message = '';
                 
@@ -678,10 +683,23 @@
                     message = `✅ 7:30前签到 +2币！`;
                 } else if (hour < 8) {
                     reward = 1;
-                    message = `✅ 8点前签到 +1币`;
+                    message = `✅ 7:30-8:00签到 +1币`;
                 } else {
+                    reward = 0;
                     message = `🌙 明天继续加油！`;
+                    
+                    // 记录8点后的签到（奖励0币，用于显示❌）
+                    const signTime = `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`;
+                    state.signHistory.push({
+                        date: today,
+                        time: signTime,
+                        reward: 0
+                    });
+                    
                     pushLog(message);
+                    updateSignDisplay();
+                    saveToCloud();
+                    renderAll();
                     return;
                 }
                 
@@ -698,7 +716,7 @@
                 state.todayEarn += reward;
                 
                 // 如果是7:30前签到，计入本周统计
-                if (hour < 7 || (hour === 7 && minute < 30)) {
+                if (reward === 2) {
                     // 检查是否需要重置周统计（周一重置）
                     const monday = getWeekMondayKey();
                     if (state.lastSignWeek !== monday) {
@@ -722,9 +740,7 @@
                 
                 pushLog(`${message} 签到时间：${signTime}`);
                 
-                // ✨ 关键：更新签到显示
                 updateSignDisplay();
-                
                 saveToCloud();
                 renderAll();
             }
@@ -747,17 +763,18 @@
                     let bgColor = 'transparent';
                     
                     if (signRecord) {
-                        const [hour, minute] = signRecord.time.split(':').map(Number);
-                        const isEarly = hour < 7 || (hour === 7 && minute < 30);
-                        
-                        if (isEarly) {
+                        if (signRecord.reward === 2) {
                             icon = '⭐';
                             color = '#ffb347';
                             bgColor = '#2a4a3a';
-                        } else {
+                        } else if (signRecord.reward === 1) {
                             icon = '✓';
                             color = '#6bb88b';
                             bgColor = '#1e4a3a';
+                        } else {
+                            icon = '❌';
+                            color = '#ff6b6b';
+                            bgColor = '#4a2a2a';
                         }
                     } else {
                         // 检查是否已过当天（判断是否错过）
@@ -1237,13 +1254,21 @@
                     }
                 });
 
+                // 修复手动保存按钮
                 document.getElementById('manualSaveBtn').addEventListener('click', function() {
                     saveToCloud();
+                    pushLog('💾 手动保存成功');
                 });
 
+                // 修复手动加载按钮
                 document.getElementById('manualLoadBtn').addEventListener('click', function() {
-                    loadFromCloud();
-                    renderAll();
+                    if (loadFromCloud()) {
+                        renderAll();
+                        updateSignDisplay();
+                        pushLog('📂 手动加载成功');
+                    } else {
+                        pushLog('❌ 没有找到保存的数据');
+                    }
                 });
             });
         })();
