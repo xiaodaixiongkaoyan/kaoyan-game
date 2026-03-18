@@ -589,7 +589,7 @@
             }
 
             function countdown() {
-                const exam = new Date(2026, 11, 19);  // 12月19日
+                const exam = new Date(2026, 11, 19);
                 const today = new Date();
                 const diff = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
                 return diff >= 0 ? diff : 0;
@@ -722,8 +722,9 @@
                 
                 pushLog(`${message} 签到时间：${signTime}`);
                 
-                // 更新签到显示
+                // ✨ 关键：更新签到显示
                 updateSignDisplay();
+                
                 saveToCloud();
                 renderAll();
             }
