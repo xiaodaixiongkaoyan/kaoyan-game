@@ -30,7 +30,7 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.35;  /* 从0.15提高到0.35 */
+            opacity: 0.35;
         }
         .medical-bg::before {
             content: "⚕️";
@@ -93,61 +93,6 @@
             gap: 16px;
             position: relative;
             z-index: 1;
-        }
-
-        /* 顶部布局：小钱袋和日志框 */
-        .top-section {
-            display: flex;
-            gap: 16px;
-            align-items: stretch;
-        }
-        
-        /* 小钱袋 - 固定在左上角 */
-        .coin-pouch {
-            background: linear-gradient(145deg, #b8860b, #8b6911);
-            border-radius: 30px;
-            padding: 15px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #ffd700;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,200,0.3);
-            min-width: 120px;
-            position: relative;
-            flex: 0 0 auto;
-        }
-        .coin-pouch::before {
-            content: "💰";
-            font-size: 2.5rem;
-            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.5));
-        }
-        .coin-amount {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #ffecb3;
-            text-shadow: 2px 2px 0 #8b6911;
-            line-height: 1.2;
-        }
-        .coin-label {
-            font-size: 0.8rem;
-            color: #ffd8a0;
-            letter-spacing: 2px;
-        }
-
-        /* 日志框 - 放在小钱袋下面（但在flex中会是右侧） */
-        .log-pouch {
-            background: #0e1b26;
-            border-radius: 30px;
-            padding: 15px 20px;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            border: 1px solid #256685;
-            color: #b0d6f0;
-            font-size: 0.95rem;
-            overflow-y: auto;
-            max-height: 100px;
         }
         
         .panel {
@@ -412,6 +357,17 @@
         .expired {
             opacity: 0.6;
         }
+        .log-panel {
+            background: #0e1b26;
+            border-radius: 30px;
+            padding: 16px 22px;
+            font-size: 0.95rem;
+            color: #b0d6f0;
+            border: 1px solid #256685;
+            min-height: 60px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -426,20 +382,6 @@
     </div>
 
     <div class="game-container" id="app">
-        <!-- 顶部：小钱袋 + 日志框 -->
-        <div class="top-section">
-            <!-- 小钱袋 -->
-            <div class="coin-pouch">
-                <div class="coin-amount" id="totalCoins">0</div>
-                <div class="coin-label">金币</div>
-            </div>
-            
-            <!-- 日志框（放在小钱袋旁边） -->
-            <div class="log-pouch" id="logPanel">
-                ⚡ 人生Online v1.3
-            </div>
-        </div>
-
         <!-- 云端状态栏 -->
         <div class="panel" style="padding: 12px 18px; background: #0f2b3b;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
@@ -497,13 +439,30 @@
             </div>
         </div>
 
-        <!-- 商店 -->
+        <!-- 商店 + 小钱袋（合并） -->
         <div class="panel">
-            <h3>🛒 商店兑换</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; border-left: none; padding-left: 0;">🛒 商店兑换</h3>
+                <!-- 小钱袋放在商店里面 -->
+                <div style="
+                    background: linear-gradient(145deg, #b8860b, #8b6911);
+                    border-radius: 40px;
+                    padding: 8px 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    border: 2px solid #ffd700;
+                    box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+                ">
+                    <span style="font-size: 1.8rem;">💰</span>
+                    <span style="font-size: 2rem; font-weight: 800; color: #ffecb3;" id="totalCoins">0</span>
+                    <span style="color: #ffd8a0;">币</span>
+                </div>
+            </div>
             <div class="store-grid" id="storeGrid"></div>
         </div>
 
-        <!-- 连续打卡追踪（移到最后） -->
+        <!-- 连续打卡追踪 -->
         <div class="panel">
             <h3>⏰ 连续打卡追踪</h3>
             <div class="track-row">
@@ -518,6 +477,11 @@
                 <span>本周医学课: <strong id="medCount">0</strong> / 8 次</span>
                 <span class="badge" id="medWarning">不足扣10币</span>
             </div>
+        </div>
+
+        <!-- 日志框放在最下面 -->
+        <div class="log-panel" id="logPanel">
+            ⚡ 人生Online v1.3
         </div>
     </div>
 
@@ -625,7 +589,7 @@
             }
 
             function countdown() {
-                const exam = new Date(2026, 11, 21);
+                const exam = new Date(2026, 11, 19);  // 12月19日
                 const today = new Date();
                 const diff = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
                 return diff >= 0 ? diff : 0;
@@ -708,16 +672,13 @@
                 // 判断签到时间（7:30前）
                 let reward = 0;
                 let message = '';
-                let signType = '';
                 
                 if (hour < 7 || (hour === 7 && minute < 30)) {
                     reward = 2;
                     message = `✅ 7:30前签到 +2币！`;
-                    signType = '⭐';
                 } else if (hour < 8) {
                     reward = 1;
                     message = `✅ 8点前签到 +1币`;
-                    signType = '✓';
                 } else {
                     message = `🌙 明天继续加油！`;
                     pushLog(message);
