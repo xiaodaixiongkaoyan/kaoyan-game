@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>🎮 人生Online · 医学生考研冲刺 v1.4</title>
+    <title>🎮 人生Online · 医学生考研冲刺 v1.5</title>
     <style>
         * {
             box-sizing: border-box;
@@ -182,6 +182,10 @@
         .sign-btn:hover {
             background: #ffa01e;
             transform: scale(0.98);
+        }
+        .sign-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .week-indicator {
             display: flex;
@@ -462,13 +466,9 @@
             <div class="store-grid" id="storeGrid"></div>
         </div>
 
-        <!-- 连续打卡追踪 -->
+        <!-- 连续打卡追踪（已删除早起签到） -->
         <div class="panel">
             <h3>⏰ 连续打卡追踪</h3>
-            <div class="track-row">
-                <span>早起签到连续: <strong id="earlyStreak">0</strong> 天</span>
-                <span class="badge">连5天 +2币</span>
-            </div>
             <div class="track-row">
                 <span>英语单词连续: <strong id="wordStreak">0</strong> 天</span>
                 <span class="badge">连7天 +3币 / 中断 -2币</span>
@@ -481,21 +481,20 @@
 
         <!-- 日志框放在最下面 -->
         <div class="log-panel" id="logPanel">
-            ⚡ 人生Online v1.4
+            ⚡ 人生Online v1.5
         </div>
     </div>
 
     <script>
         (function() {
             // ==================== 云端存储配置 ====================
-            const CLOUD_KEY = 'kaoyan_game_data_v14';
+            const CLOUD_KEY = 'kaoyan_game_data_v15';
             
             // ==================== 初始化状态 ====================
             let state = {
                 totalCoins: 0,
                 todayEarn: 0,
                 lastDate: '',
-                earlyStreak: 0,
                 wordStreak: 0,
                 wordLastDate: '',
                 lastWordRewardDay: '',
@@ -669,8 +668,17 @@
                     }
                     pushLog(`❌ 今天已经签到过了！${signType} (${todaySign.time})`);
                     
+                    // 立即刷新界面
                     updateSignDisplay();
                     renderAll();
+                    
+                    // 防连点：禁用按钮1秒
+                    const signBtn = document.getElementById('signBtn');
+                    signBtn.disabled = true;
+                    setTimeout(() => {
+                        signBtn.disabled = false;
+                    }, 1000);
+                    
                     return;
                 }
                 
@@ -700,6 +708,14 @@
                     updateSignDisplay();
                     saveToCloud();
                     renderAll();
+                    
+                    // 防连点：禁用按钮1秒
+                    const signBtn = document.getElementById('signBtn');
+                    signBtn.disabled = true;
+                    setTimeout(() => {
+                        signBtn.disabled = false;
+                    }, 1000);
+                    
                     return;
                 }
                 
@@ -740,9 +756,17 @@
                 
                 pushLog(`${message} 签到时间：${signTime}`);
                 
+                // 立即刷新所有显示
                 updateSignDisplay();
                 saveToCloud();
                 renderAll();
+                
+                // 防连点：禁用按钮1秒
+                const signBtn = document.getElementById('signBtn');
+                signBtn.disabled = true;
+                setTimeout(() => {
+                    signBtn.disabled = false;
+                }, 1000);
             }
 
             // 更新签到周显示（美化版）
@@ -1153,7 +1177,6 @@
                 document.getElementById('weekdayDisplay').innerText = updateWeekday();
                 document.getElementById('todayEarn').innerText = state.todayEarn;
                 document.getElementById('totalCoins').innerText = state.totalCoins;
-                document.getElementById('earlyStreak').innerText = state.earlyStreak;
                 document.getElementById('wordStreak').innerText = state.wordStreak;
                 document.getElementById('medCount').innerText = state.medWeekCount;
                 document.getElementById('medWarning').innerText = state.medWeekCount >= 8 ? '✅ 已达标' : '不足扣10币';
@@ -1254,13 +1277,13 @@
                     }
                 });
 
-                // 修复手动保存按钮
+                // 手动保存按钮
                 document.getElementById('manualSaveBtn').addEventListener('click', function() {
                     saveToCloud();
                     pushLog('💾 手动保存成功');
                 });
 
-                // 修复手动加载按钮
+                // 手动加载按钮
                 document.getElementById('manualLoadBtn').addEventListener('click', function() {
                     if (loadFromCloud()) {
                         renderAll();
